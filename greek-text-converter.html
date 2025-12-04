@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Μιλατε Ελληνικα, Παρακαλω!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #8fafa8 0%, #e2e2e2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #8fafa8;
+        }
+
+        .output-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            position: relative;
+        }
+
+        .output-text {
+            font-family: 'Courier New', monospace;
+            color: #333;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .output-text.empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        button {
+            background: #8fafa8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        button:hover {
+            background: #78938d;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .copy-btn {
+            margin-top: 5px;
+        }
+
+        .copy-success {
+            color: #10b981;
+            font-size: 12px;
+            margin-left: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .copy-success.show {
+            opacity: 1;
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        select {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            background: white;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #8fafa8;
+        }
+
+        .loading {
+            color: #666;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .char-info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🇬🇷 Μιλατε Ελληνικα, Παρακαλω!</h1>
+        <p class="subtitle">Convert mixed Greek-English characters to pure Greek text</p>
+
+        <div class="section">
+            <label for="inputText">Input Text (Mixed Characters):</label>
+            <textarea id="inputText" placeholder="Paste your text with mixed Greek and English characters here..."
+                rows="3"></textarea>
+            <div class="char-info" id="inputInfo"></div>
+        </div>
+
+        <div class="section">
+            <label>Corrected Greek Text:</label>
+            <div class="output-section">
+                <div class="output-text empty" id="correctedText">Corrected text will appear here...</div>
+                <button class="copy-btn" id="copyBtn" disabled>
+                    📋 Copy
+                </button>
+                <span class="copy-success" id="copySuccess">Copied!</span>
+                <div class="char-info" id="correctedInfo"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <label>Translation:</label>
+            <div class="language-selector">
+                <span style="font-size: 14px; color: #666;">Translate to:</span>
+                <select id="targetLanguage">
+                    <option value="ru">Russian</option>
+                    <option value="en">English</option>
+                    <option value="de">German</option>
+                    <option value="fr">French</option>
+                    <option value="es">Spanish</option>
+                    <option value="it">Italian</option>
+                </select>
+            </div>
+            <div class="output-section">
+                <div class="output-text empty" id="translatedText">Translation will appear here...</div>
+                <button class="copy-btn" id="copyTranslationBtn" disabled>
+                    📋 Copy Translation
+                </button>
+                <span class="copy-success" id="copyTranslationSuccess">Copied!</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mapping of lookalike English/Latin characters to Greek characters
+        const charMapping = {
+            // Uppercase
+            'A': 'Α', 'B': 'Β', 'E': 'Ε', 'Z': 'Ζ', 'H': 'Η', 'I': 'Ι',
+            'K': 'Κ', 'M': 'Μ', 'N': 'Ν', 'O': 'Ο', 'P': 'Ρ', 'T': 'Τ',
+            'Y': 'Υ', 'X': 'Χ',
+            // Lowercase
+            'a': 'α', 'e': 'ε', 'i': 'ι', 'o': 'ο', 'v': 'ν', 'x': 'χ',
+            // Special cases
+            'C': 'Σ', // Sometimes C is used for Σ
+        };
+
+        const inputText = document.getElementById('inputText');
+        const correctedText = document.getElementById('correctedText');
+        const translatedText = document.getElementById('translatedText');
+        const copyBtn = document.getElementById('copyBtn');
+        const copyTranslationBtn = document.getElementById('copyTranslationBtn');
+        const copySuccess = document.getElementById('copySuccess');
+        const copyTranslationSuccess = document.getElementById('copyTranslationSuccess');
+        const targetLanguage = document.getElementById('targetLanguage');
+        const inputInfo = document.getElementById('inputInfo');
+        const correctedInfo = document.getElementById('correctedInfo');
+
+        let translationTimeout;
+
+        function convertToGreek(text) {
+            if (!text.trim()) return '';
+
+            // Split text into words and process each word separately
+            const words = text.split(/(\s+)/);
+            let result = words.map(word => {
+                // Skip whitespace
+                if (/^\s+$/.test(word))
+                    return word;
+
+                // Check if word contains any non-mappable Latin characters
+                // (characters that are Latin but not in our mapping)
+                let hasNonMappableLatin = false;
+                for (let char of word) {
+                    // Check if it's a Latin letter that's NOT in our mapping
+                    if (/[A-Za-z]/.test(char) && !charMapping[char]) {
+                        hasNonMappableLatin = true;
+                        break;
+                    }
+                }
+
+                // If word has non-mappable Latin characters, keep it as-is
+                if (hasNonMappableLatin) {
+                    return word;
+                }
+
+                // Otherwise, convert mappable characters to Greek
+                let convertedWord = '';
+                for (let char of word) {
+                    if (charMapping[char]) {
+                        convertedWord += charMapping[char];
+                    } else {
+                        convertedWord += char;
+                    }
+                }
+                return convertedWord;
+            }).join('');
+            return result;
+        }
+
+        function updateCharInfo(text, element) {
+            const charCount = text.length;
+            const greekChars = (text.match(/[\u0370-\u03FF\u1F00-\u1FFF]/g) || []).length;
+            const latinChars = (text.match(/[A-Za-z]/g) || []).length;
+            if (text.trim()) {
+                element.textContent = `Characters: ${charCount} | Greek: ${greekChars} | Latin: ${latinChars}`;
+            } else {
+                element.textContent = '';
+            }
+        }
+
+        async function translateText(text, targetLang) {
+            if (!text.trim()) return '';
+
+            try {
+                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+                const res = await fetch(url);
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+
+                const data = await res.json();
+                console.log("API Response:", data);
+
+                // Extract translated text
+                if (Array.isArray(data) && data[0] && Array.isArray(data[0][0])) {
+                    return data[0].map(sentence => sentence[0]).join(" ");
+                } else {
+                    throw new Error("Unexpected response format");
+                }
+            } catch (error) {
+                console.error("Translation failed:", error.message);
+                return "Error during translation.";
+            }
+        }
+
+        function updateOutput() {
+            const input = inputText.value;
+
+            updateCharInfo(input, inputInfo);
+
+            if (!input.trim()) {
+                correctedText.textContent = 'Corrected text will appear here...';
+                correctedText.classList.add('empty');
+                translatedText.textContent = 'Translation will appear here...';
+                translatedText.classList.add('empty');
+                copyBtn.disabled = true;
+                copyTranslationBtn.disabled = true;
+                correctedInfo.textContent = '';
+                return;
+            }
+
+            const converted = convertToGreek(input);
+            correctedText.textContent = converted;
+            correctedText.classList.remove('empty');
+            copyBtn.disabled = false;
+
+            updateCharInfo(converted, correctedInfo);
+
+            // Debounce translation
+            clearTimeout(translationTimeout);
+            translatedText.textContent = 'Translating...';
+            translatedText.classList.add('empty', 'loading');
+            copyTranslationBtn.disabled = true;
+
+            translationTimeout = setTimeout(async () => {
+                const translation = await translateText(converted, targetLanguage.value);
+                translatedText.textContent = translation;
+                translatedText.classList.remove('empty', 'loading');
+                copyTranslationBtn.disabled = false;
+            }, 500);
+        }
+
+        function copyToClipboard(text, successElement) {
+            navigator.clipboard.writeText(text).then(() => {
+                successElement.classList.add('show');
+                setTimeout(() => {
+                    successElement.classList.remove('show');
+                }, 2000);
+            });
+        }
+
+        inputText.addEventListener('input', updateOutput);
+
+        targetLanguage.addEventListener('change', () => {
+            if (correctedText.textContent && !correctedText.classList.contains('empty')) {
+                updateOutput();
+            }
+        });
+
+        copyBtn.addEventListener('click', () => {
+            copyToClipboard(correctedText.textContent, copySuccess);
+        });
+
+        copyTranslationBtn.addEventListener('click', () => {
+            copyToClipboard(translatedText.textContent, copyTranslationSuccess);
+        });
+    </script>
+</body>
+
+</html>
