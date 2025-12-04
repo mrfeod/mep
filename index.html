@@ -38,6 +38,12 @@
             text-align: center;
         }
 
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 18px;
+            }
+        }
+
         .subtitle {
             color: #666;
             text-align: center;
@@ -88,7 +94,7 @@
             line-height: 1.6;
             white-space: pre-wrap;
             word-wrap: break-word;
-            min-height: 60px;
+            min-height: 48px;
             margin-bottom: 10px;
         }
 
@@ -127,11 +133,22 @@
         }
 
         .copy-success {
-            color: #10b981;
-            font-size: 12px;
-            margin-left: 10px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #8fafa8;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             opacity: 0;
+            pointer-events: none;
             transition: opacity 0.3s;
+            z-index: 1000;
+            user-select: none;
         }
 
         .copy-success.show {
@@ -171,30 +188,45 @@
             color: #888;
             margin-top: 5px;
         }
+
+        .button-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
     </style>
 </head>
 
 <body>
+    <div class="copy-success" id="copySuccess">✓ Copied!</div>
+
     <div class="container">
         <h1>🇬🇷 Μιλατε Ελληνικα, Παρακαλω!</h1>
         <p class="subtitle">Convert mixed Greek-English characters to pure Greek text</p>
 
         <div class="section">
             <label for="inputText">Input Text (Mixed Characters):</label>
-            <textarea id="inputText" placeholder="Paste your text with mixed Greek and English characters here..."
-                rows="3"></textarea>
-            <div class="char-info" id="inputInfo"></div>
+            <textarea id="inputText" placeholder="Paste your mixed characters text here..." rows="3"></textarea>
+            <div class="button-row">
+                <div class="char-info" id="inputInfo"></div>
+                <button class="copy-btn" id="pasteBtn">
+                    📋 Paste
+                </button>
+                <div style="padding-right: 5px;"> </div>
+            </div>
         </div>
 
         <div class="section">
             <label>Corrected Greek Text:</label>
             <div class="output-section">
                 <div class="output-text empty" id="correctedText">Corrected text will appear here...</div>
-                <button class="copy-btn" id="copyBtn" disabled>
-                    📋 Copy
-                </button>
-                <span class="copy-success" id="copySuccess">Copied!</span>
-                <div class="char-info" id="correctedInfo"></div>
+                <div class="button-row">
+                    <div class="char-info" id="correctedInfo"></div>
+                    <button class="copy-btn" id="copyBtn" disabled>
+                        📋 Copy
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -213,10 +245,11 @@
             </div>
             <div class="output-section">
                 <div class="output-text empty" id="translatedText">Translation will appear here...</div>
-                <button class="copy-btn" id="copyTranslationBtn" disabled>
-                    📋 Copy Translation
-                </button>
-                <span class="copy-success" id="copyTranslationSuccess">Copied!</span>
+                <div class="button-row">
+                    <button class="copy-btn" id="copyTranslationBtn" disabled>
+                        📋 Copy
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -238,9 +271,9 @@
         const correctedText = document.getElementById('correctedText');
         const translatedText = document.getElementById('translatedText');
         const copyBtn = document.getElementById('copyBtn');
+        const pasteBtn = document.getElementById('pasteBtn');
         const copyTranslationBtn = document.getElementById('copyTranslationBtn');
         const copySuccess = document.getElementById('copySuccess');
-        const copyTranslationSuccess = document.getElementById('copyTranslationSuccess');
         const targetLanguage = document.getElementById('targetLanguage');
         const inputInfo = document.getElementById('inputInfo');
         const correctedInfo = document.getElementById('correctedInfo');
@@ -360,11 +393,11 @@
             }, 500);
         }
 
-        function copyToClipboard(text, successElement) {
+        function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                successElement.classList.add('show');
+                copySuccess.classList.add('show');
                 setTimeout(() => {
-                    successElement.classList.remove('show');
+                    copySuccess.classList.remove('show');
                 }, 2000);
             });
         }
@@ -378,11 +411,21 @@
         });
 
         copyBtn.addEventListener('click', () => {
-            copyToClipboard(correctedText.textContent, copySuccess);
+            copyToClipboard(correctedText.textContent);
         });
 
         copyTranslationBtn.addEventListener('click', () => {
-            copyToClipboard(translatedText.textContent, copyTranslationSuccess);
+            copyToClipboard(translatedText.textContent);
+        });
+
+        pasteBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                inputText.value = text;
+                updateOutput();
+            } catch (err) {
+                console.error('Failed to read clipboard:', err);
+            }
         });
     </script>
 </body>
